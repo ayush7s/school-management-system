@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from functools import wraps
 
 from flask import (
@@ -268,3 +271,4 @@ def download_study_material(filename):
 # ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run(debug=True)
+
