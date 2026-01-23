@@ -32,6 +32,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "school_secret_key"
 
 db.init_app(app)
+with app.app_context():
+    db.create_all()
+
 
 # ---------------- FILE UPLOAD CONFIG ----------------
 NOTICE_FOLDER = os.path.join(BASE_DIR, "uploads", "notices")
