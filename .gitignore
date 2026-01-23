@@ -1,0 +1,16 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Database
+*.db
+instance/
+
+# Secrets & admin scripts
+create_admin.py
+reset_admin_password_once.py
+gg.py
+.env
+
+# Uploads (optional – recommended)
+uploads/

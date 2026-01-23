@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}FRIENDS SISHU BIKASH ACADEMY{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header>
+    <div class="logo">
+        <h1>FRIENDS SISHU BIKASH ACADEMY</h1>
+    </div>
+
+    <nav>
+        <ul>
+            {% if session.get("role") == "admin" %}
+    <li><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+{% endif %}
+
+            <li><a href="/">Home</a></li>
+            <li><a href="/notices">Notices</a></li>
+            <li><a href="/announcements">Announcements</a></li>
+            <li><a href="/materials">Study Materials</a></li>
+            <li><a href="/contact">Contact</a></li>
+
+            {% if session.get("role") %}
+                <li class="nav-user">
+                    <small>Logged in as {{ session.get("role") }}</small>
+                </li>
+                <li>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('login') }}">Login</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+<!-- ================= MAIN CONTENT ================= -->
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+    <p>&copy; FRIENDS SISHU BIKASH ACADEMY. All Rights Reserved.</p>
+</footer>
+
+<!-- Chatbot UI -->
+<div class="chatbot" id="chatbot">
+    <div class="chatbot-header" onclick="toggleChatbot()">School Assistant</div>
+    <div class="chatbot-body" id="chatBody">
+        <p><strong>Bot:</strong> Hello! How can I help you?</p>
+    </div>
+    <div class="chatbot-input">
+        <input type="text" id="chatInput" placeholder="Ask something...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>

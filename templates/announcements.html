@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Announcements{% endblock %}
+
+{% block content %}
+<h2>Announcements</h2>
+
+<!-- ================= ADMIN-ONLY UPLOAD FORM ================= -->
+<!-- 🔽 (ALREADY CORRECT) -->
+{% if session.get("role") == "admin" %}
+<form method="POST" enctype="multipart/form-data" style="margin-bottom:20px;">
+    <input type="text" name="title" placeholder="Title" required><br><br>
+    <textarea name="content" placeholder="Announcement content" required></textarea><br><br>
+    <input type="file" name="file"><br><br>
+    <button type="submit">Post Announcement</button>
+</form>
+<hr>
+{% endif %}
+<!-- ================= END ADMIN-ONLY UPLOAD ================= -->
+
+
+<!-- ================= ANNOUNCEMENT LIST (VISIBLE TO ALL) ================= -->
+{% if announcements and announcements|length > 0 %}
+    {% for ann in announcements %}
+        <div class="notice-card" style="margin-bottom:20px;">
+            <h3>{{ ann.title }}</h3>
+            <p>{{ ann.content }}</p>
+
+            {% if ann.file_name %}
+                <!-- 🔽 FIXED: correct download route name -->
+                <a href="{{ url_for('download_announcement_file', filename=ann.file_name) }}">
+                    📄 Download Attachment
+                </a>
+                <br>
+            {% endif %}
+
+            <small>
+                Posted on {{ ann.created_at.strftime('%d %b %Y') }}
+            </small>
+
+            <!-- ================= ADMIN-ONLY DELETE ================= -->
+            {% if session.get("role") == "admin" %}
+                <br>
+                <a href="{{ url_for('delete_announcement', id=ann.id) }}"
+                   onclick="return confirm('Delete this announcement?')"
+                   style="color:red;">
+                   Delete
+                </a>
+            {% endif %}
+            <!-- ================= END ADMIN-ONLY DELETE ================= -->
+
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No announcements available.</p>
+{% endif %}
+<!-- ================= END LIST ================= -->
+
+{% endblock %}

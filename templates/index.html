@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <h2>Welcome to Friends Sishu Bikash Academy</h2>
+    <p>Learning today, leading tomorrow.</p>
+</section>
+
+{% if announcements %}
+<div class="announcement-badge-wrapper">
+    <div class="announcement-badge">
+        <span class="badge-label">ANNOUNCEMENT</span>
+        <span class="badge-text">
+            <a href="{{ url_for('announcements') }}">
+                {{ announcements[0].title }}
+            </a>
+        </span>
+    </div>
+</div>
+{% endif %}
+
+<section class="notices">
+    <h2>Latest Notices</h2>
+    ...
+</section>
+<section class="notices">
+    <h2>Latest Notices</h2>
+
+    {% if notices and notices|length > 0 %}
+        <ul>
+            {% for notice in notices %}
+                <li>
+                    <a href="{{ url_for('notice_detail', notice_id=notice.id) }}">
+                        {{ notice.title }}
+                    </a>
+                    <br>
+                    <small>
+                        Posted on {{ notice.created_at.strftime('%d %b %Y') }}
+                    </small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No notices available at the moment.</p>
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('notices') }}">View all notices</a>
+</section>
+
+{% endblock %}

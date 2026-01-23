@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Study Materials{% endblock %}
+
+{% block content %}
+<h2>Study Materials</h2>
+
+<!-- ================= ADMIN-ONLY UPLOAD FORM ================= -->
+{% if session.get("role") == "admin" %}
+<div class="notice-card">
+    <h3>Upload Study Material</h3>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Material Title" required>
+        <input type="text" name="subject" placeholder="Subject" required>
+        <input type="text" name="class_name" placeholder="Class / Grade" required>
+        <input type="file" name="file" accept=".pdf" required>
+        <button type="submit">Upload</button>
+    </form>
+</div>
+<hr>
+{% endif %}
+<!-- ================= END ADMIN UPLOAD ================= -->
+
+
+<!-- ================= MATERIAL LIST ================= -->
+{% if materials and materials|length > 0 %}
+    {% for material in materials %}
+    <div class="notice-card">
+        <h3>{{ material.title }}</h3>
+        <p>
+            Subject: {{ material.subject }}<br>
+            Class: {{ material.class_name }}
+        </p>
+
+        <a href="{{ url_for('download_study_material', filename=material.file_name) }}">
+            📄 Download
+        </a>
+
+        <br>
+        <small>
+            Uploaded on {{ material.uploaded_at.strftime('%d %b %Y') }}
+        </small>
+
+        <!-- ================= ADMIN-ONLY DELETE ================= -->
+        {% if session.get("role") == "admin" %}
+            <br>
+            <a href="{{ url_for('delete_material', id=material.id) }}"
+               onclick="return confirm('Delete this study material?')"
+               style="color:red;">
+                Delete
+            </a>
+        {% endif %}
+        <!-- ================= END ADMIN DELETE ================= -->
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No study materials available.</p>
+{% endif %}
+<!-- ================= END LIST ================= -->
+
+{% endblock %}

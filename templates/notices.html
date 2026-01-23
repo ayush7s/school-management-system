@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Notices{% endblock %}
+
+{% block content %}
+<section class="notices">
+    <h2>Notices</h2>
+
+    <!-- ================= ADMIN-ONLY UPLOAD NOTICE ================= -->
+    <!-- 🔽 ADDED: wrapped upload form with admin check -->
+    {% if session.get("role") == "admin" %}
+    <div class="notice-card">
+        <h3>Add New Notice</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Notice Title" required>
+            <textarea name="content" placeholder="Notice Content" required></textarea>
+            <input type="file" name="pdf" accept=".pdf">
+            <button type="submit">Upload Notice</button>
+        </form>
+    </div>
+
+    <hr>
+    {% endif %}
+    <!-- ================= END ADMIN-ONLY UPLOAD ================= -->
+
+
+    <!-- ================= DISPLAY NOTICES (VISIBLE TO ALL) ================= -->
+    {% for notice in notices %}
+    <div class="notice-card">
+        <h3>{{ notice.title }}</h3>
+        <p>{{ notice.content }}</p>
+
+        {% if notice.pdf_file %}
+            <p>
+                <a href="{{ url_for('download_notice_pdf', filename=notice.pdf_file) }}">
+                    📄 Download PDF
+                </a>
+            </p>
+        {% endif %}
+
+        <small>Posted on {{ notice.created_at.strftime('%d %b %Y') }}</small>
+
+        <!-- ================= ADMIN-ONLY DELETE ================= -->
+        <!-- 🔽 ADDED: delete button only for admin -->
+        {% if session.get("role") == "admin" %}
+            <br>
+            <a href="{{ url_for('delete_notice', id=notice.id) }}"
+               onclick="return confirm('Delete this notice?')"
+               style="color:red;">
+               Delete
+            </a>
+        {% endif %}
+        <!-- ================= END ADMIN-ONLY DELETE ================= -->
+
+    </div>
+    {% endfor %}
+    <!-- ================= END DISPLAY ================= -->
+
+</section>
+{% endblock %}

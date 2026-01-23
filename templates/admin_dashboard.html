@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<div class="admin-dashboard">
+
+    <div class="admin-card">
+        <h3>Notices</h3>
+        <p>Total: {{ notice_count }}</p>
+        <a href="{{ url_for('notices') }}">Manage Notices</a>
+    </div>
+
+    <div class="admin-card">
+        <h3>Announcements</h3>
+        <p>Total: {{ announcement_count }}</p>
+        <a href="{{ url_for('announcements') }}">Manage Announcements</a>
+    </div>
+
+    <div class="admin-card">
+        <h3>Study Materials</h3>
+        <p>Total: {{ material_count }}</p>
+        <a href="{{ url_for('materials') }}">Manage Materials</a>
+    </div>
+
+</div>
+{% endblock %}
