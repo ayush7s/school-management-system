@@ -7,7 +7,7 @@ from flask import (
     session, flash
 )
 from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from models import db
 from models.user import User
@@ -29,12 +29,30 @@ DB_PATH = os.path.join(INSTANCE_DIR, "school.db")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + DB_PATH
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SECRET_KEY"] = "school_secret_key"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "school_secret_key")
 
 db.init_app(app)
+
+# ---------------- CREATE TABLES + ADMIN ----------------
 with app.app_context():
     db.create_all()
 
+    # ✅ ADMIN AUTO-CREATION FROM ENV
+    admin_email = os.environ.get("ADMIN_EMAIL")
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+
+    if admin_email and admin_password:
+        admin = User.query.filter_by(email=admin_email).first()
+        if not admin:
+            db.session.add(
+                User(
+                    name="Administrator",
+                    email=admin_email,
+                    password=generate_password_hash(admin_password),
+                    role="admin"
+                )
+            )
+            db.session.commit()
 
 # ---------------- FILE UPLOAD CONFIG ----------------
 NOTICE_FOLDER = os.path.join(BASE_DIR, "uploads", "notices")
@@ -87,7 +105,6 @@ def login():
 
     return render_template("login.html")
 
-
 @app.route("/logout")
 def logout():
     session.clear()
@@ -116,16 +133,19 @@ def notices():
         if session.get("role") != "admin":
             return redirect(url_for("login"))
 
-        title = request.form["title"]
-        content = request.form["content"]
-
         pdf = request.files.get("pdf")
         filename = None
         if pdf and pdf.filename:
             filename = secure_filename(pdf.filename)
             pdf.save(os.path.join(app.config["NOTICE_FOLDER"], filename))
 
-        db.session.add(Notice(title=title, content=content, pdf_file=filename))
+        db.session.add(
+            Notice(
+                title=request.form["title"],
+                content=request.form["content"],
+                pdf_file=filename
+            )
+        )
         db.session.commit()
         return redirect(url_for("notices"))
 
@@ -134,15 +154,12 @@ def notices():
         notices=Notice.query.order_by(Notice.created_at.desc()).all()
     )
 
-
 @app.route("/notice/delete/<int:id>")
 @admin_required
 def delete_notice(id):
-    notice = Notice.query.get_or_404(id)
-    db.session.delete(notice)
+    db.session.delete(Notice.query.get_or_404(id))
     db.session.commit()
     return redirect(url_for("notices"))
-
 
 @app.route("/notice/<int:notice_id>")
 def notice_detail(notice_id):
@@ -150,7 +167,6 @@ def notice_detail(notice_id):
         "notice_detail.html",
         notice=Notice.query.get_or_404(notice_id)
     )
-
 
 @app.route("/uploads/notices/<filename>")
 def download_notice_pdf(filename):
@@ -165,9 +181,6 @@ def announcements():
         if session.get("role") != "admin":
             return redirect(url_for("login"))
 
-        title = request.form["title"]
-        content = request.form["content"]
-
         file = request.files.get("file")
         filename = None
         if file and file.filename:
@@ -175,7 +188,11 @@ def announcements():
             file.save(os.path.join(app.config["ANNOUNCEMENT_FOLDER"], filename))
 
         db.session.add(
-            Announcement(title=title, content=content, file_name=filename)
+            Announcement(
+                title=request.form["title"],
+                content=request.form["content"],
+                file_name=filename
+            )
         )
         db.session.commit()
         return redirect(url_for("announcements"))
@@ -187,16 +204,13 @@ def announcements():
         ).all()
     )
 
-
 @app.route("/announcement/delete/<int:id>")
 @admin_required
 def delete_announcement(id):
-    ann = Announcement.query.get_or_404(id)
-    db.session.delete(ann)
+    db.session.delete(Announcement.query.get_or_404(id))
     db.session.commit()
     return redirect(url_for("announcements"))
 
-# ✅ FIX ADDED: ANNOUNCEMENT FILE DOWNLOAD
 @app.route("/uploads/announcements/<filename>")
 def download_announcement_file(filename):
     return send_from_directory(
@@ -210,10 +224,6 @@ def materials():
         if session.get("role") != "admin":
             return redirect(url_for("login"))
 
-        title = request.form["title"]
-        subject = request.form["subject"]
-        class_name = request.form["class_name"]
-
         file = request.files.get("file")
         if not file or not file.filename:
             return redirect(url_for("materials"))
@@ -223,9 +233,9 @@ def materials():
 
         db.session.add(
             StudyMaterial(
-                title=title,
-                subject=subject,
-                class_name=class_name,
+                title=request.form["title"],
+                subject=request.form["subject"],
+                class_name=request.form["class_name"],
                 file_name=filename
             )
         )
@@ -239,15 +249,12 @@ def materials():
         ).all()
     )
 
-
 @app.route("/material/delete/<int:id>")
 @admin_required
 def delete_material(id):
-    material = StudyMaterial.query.get_or_404(id)
-    db.session.delete(material)
+    db.session.delete(StudyMaterial.query.get_or_404(id))
     db.session.commit()
     return redirect(url_for("materials"))
-
 
 @app.route("/uploads/study_materials/<filename>")
 def download_study_material(filename):
