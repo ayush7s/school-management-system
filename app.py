@@ -33,26 +33,27 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "school_secret_key")
 
 db.init_app(app)
 
-# ---------------- CREATE TABLES + ADMIN ----------------
+# ---------------- CREATE TABLES + ADMIN (CRITICAL FIX) ----------------
 with app.app_context():
     db.create_all()
 
-    # ✅ ADMIN AUTO-CREATION FROM ENV
     admin_email = os.environ.get("ADMIN_EMAIL")
     admin_password = os.environ.get("ADMIN_PASSWORD")
 
     if admin_email and admin_password:
         admin = User.query.filter_by(email=admin_email).first()
+
         if not admin:
-            db.session.add(
-                User(
-                    name="Administrator",
-                    email=admin_email,
-                    password=generate_password_hash(admin_password),
-                    role="admin"
-                )
+            admin = User(
+                name="Administrator",
+                email=admin_email,
+                role="admin"
             )
-            db.session.commit()
+            db.session.add(admin)
+
+        # 🔑 ALWAYS update password from ENV
+        admin.password = generate_password_hash(admin_password)
+        db.session.commit()
 
 # ---------------- FILE UPLOAD CONFIG ----------------
 NOTICE_FOLDER = os.path.join(BASE_DIR, "uploads", "notices")
@@ -91,8 +92,8 @@ def admin_dashboard():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+        email = request.form.get("email")
+        password = request.form.get("password")
 
         user = User.query.filter_by(email=email).first()
 
@@ -135,6 +136,7 @@ def notices():
 
         pdf = request.files.get("pdf")
         filename = None
+
         if pdf and pdf.filename:
             filename = secure_filename(pdf.filename)
             pdf.save(os.path.join(app.config["NOTICE_FOLDER"], filename))
@@ -183,6 +185,7 @@ def announcements():
 
         file = request.files.get("file")
         filename = None
+
         if file and file.filename:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config["ANNOUNCEMENT_FOLDER"], filename))
