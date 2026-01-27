@@ -2,3 +2,5 @@ Flask
 Flask-SQLAlchemy
 Werkzeug
 gunicorn
+qrcode[pil]
+Pillow
