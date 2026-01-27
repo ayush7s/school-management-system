@@ -4,13 +4,20 @@
 
 {% block content %}
 
-<section class="hero">
-    <h2>Welcome to Friends Sishu Bikash Academy</h2>
-    <p>Learning today, leading tomorrow.</p>
+<section class="hero hero-centered" data-aos="fade-up">
+    <div class="hero-copy">
+        <h2>Welcome to Friends Sishu Bikash Academy</h2>
+        <p>Learning today, leading tomorrow.</p>
+
+        <div class="hero-actions">
+            <a href="{{ url_for('materials') }}" class="btn btn-primary">Free Study Materials</a>
+            <a href="{{ url_for('paid_materials') }}" class="btn btn-secondary">Paid Materials</a>
+        </div>
+    </div>
 </section>
 
 {% if announcements %}
-<div class="announcement-badge-wrapper">
+<div class="announcement-badge-wrapper" data-aos="fade-up">
     <div class="announcement-badge">
         <span class="badge-label">ANNOUNCEMENT</span>
         <span class="badge-text">
@@ -22,33 +29,58 @@
 </div>
 {% endif %}
 
-<section class="notices">
-    <h2>Latest Notices</h2>
-    ...
+<section class="section" data-aos="fade-up">
+    <div class="section-header">
+        <h2>Faculty Members</h2>
+        <p>Experienced, caring teachers guiding every learner.</p>
+    </div>
+
+    <div class="faculty-grid">
+        {% for f in faculty_members %}
+        <article class="faculty-card" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 60 }}">
+            <div class="faculty-avatar">
+                <img src="{{ url_for('static', filename='faculty/' + f.image) }}" alt="{{ f.name }}">
+            </div>
+            <div class="faculty-body">
+                <h3>{{ f.name }}</h3>
+                <p class="faculty-role">{{ f.designation }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
 </section>
-<section class="notices">
-    <h2>Latest Notices</h2>
+
+<section class="section notices" data-aos="fade-up">
+    <div class="section-header">
+        <h2>Latest Notices</h2>
+        <p>Stay updated with important school information.</p>
+    </div>
 
     {% if notices and notices|length > 0 %}
-        <ul>
+        <div class="notice-list">
             {% for notice in notices %}
-                <li>
-                    <a href="{{ url_for('notice_detail', notice_id=notice.id) }}">
-                        {{ notice.title }}
-                    </a>
-                    <br>
-                    <small>
+                <article class="notice-card" data-aos="fade-up">
+                    <h3>
+                        <a href="{{ url_for('notices') }}">
+
+                            {{ notice.title }}
+                        </a>
+                    </h3>
+                    <p class="notice-meta">
                         Posted on {{ notice.created_at.strftime('%d %b %Y') }}
-                    </small>
-                </li>
+                    </p>
+                </article>
             {% endfor %}
-        </ul>
+        </div>
     {% else %}
         <p>No notices available at the moment.</p>
     {% endif %}
 
-    <br>
-    <a href="{{ url_for('notices') }}">View all notices</a>
+    <div class="section-footer">
+        <a href="{{ url_for('notices') }}" class="btn btn-outline">
+            View all notices
+        </a>
+    </div>
 </section>
 
 {% endblock %}

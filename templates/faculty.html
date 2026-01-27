@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Faculty Members{% endblock %}
+
+{% block content %}
+<section class="section" data-aos="fade-up">
+    <div class="section-header">
+        <h2>Faculty Members</h2>
+        <p>Meet our dedicated teachers and mentors.</p>
+    </div>
+
+    <div class="faculty-grid">
+        {% for f in faculty_members %}
+        <article class="faculty-card" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 60 }}">
+            <div class="faculty-avatar">
+                <img src="{{ url_for('static', filename='faculty/' + f.image) }}" alt="{{ f.name }}">
+            </div>
+            <div class="faculty-body">
+                <h3>{{ f.name }}</h3>
+                <p class="faculty-role">{{ f.designation }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

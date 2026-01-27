@@ -2,54 +2,77 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}FRIENDS SISHU BIKASH ACADEMY{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
 <body>
 
 <!-- ================= HEADER ================= -->
-<header>
-    <div class="logo">
-        <h1>FRIENDS SISHU BIKASH ACADEMY</h1>
+<header class="site-header">
+    <div class="header-inner">
+        <div class="logo">
+            <img
+             src="{{ url_for('static', filename='images/logo.png') }}" 
+             alt="School Logo" 
+             class="logo-mark">
+            <div class="logo-text">
+                <h1>FRIENDS SISHU BIKASH ACADEMY</h1>
+               
+            </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" onclick="toggleMobileNav()">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="navbar" aria-label="Primary navigation">
+            <ul class="nav-links" id="primaryNav">
+                <li><a class="nav-link" href="/">Home</a></li>
+                {% if session.get("role") == "admin" %}
+                    <li><a class="nav-link" href="{{ url_for('admin_faculty') }}">Manage Faculty</a></li>
+                {% endif %}
+                {% if session.get("role") == "admin" %}
+                    <li><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                    <li><a class="nav-link" href="{{ url_for('admin_paid_materials') }}">Manage Paid Materials</a></li>
+                {% endif %}
+
+                <li><a class="nav-link" href="{{ url_for('faculty_public') }}">Faculty Members</a></li>
+                <li><a class="nav-link" href="/notices">Notices</a></li>
+                <li><a class="nav-link" href="/announcements">Announcements</a></li>
+                <li><a class="nav-link" href="/materials">Study Materials</a></li>
+                <li><a class="nav-link" href="{{ url_for('paid_materials') }}">Paid Materials</a></li>
+                <li><a class="nav-link" href="/contact">Contact</a></li>
+
+                {% if session.get("role") %}
+                    <li class="nav-user">
+                        <span class="nav-user-pill">Logged in as {{ session.get("role") }}</span>
+                    </li>
+                    <li><a class="btn btn-outline-light btn-xs" href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a class="btn btn-light btn-xs" href="{{ url_for('login') }}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
-
-    <nav>
-        <ul>
-            {% if session.get("role") == "admin" %}
-    <li><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
-{% endif %}
-
-            <li><a href="/">Home</a></li>
-            <li><a href="/notices">Notices</a></li>
-            <li><a href="/announcements">Announcements</a></li>
-            <li><a href="/materials">Study Materials</a></li>
-            <li><a href="/contact">Contact</a></li>
-
-            {% if session.get("role") %}
-                <li class="nav-user">
-                    <small>Logged in as {{ session.get("role") }}</small>
-                </li>
-                <li>
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                </li>
-            {% else %}
-                <li>
-                    <a href="{{ url_for('login') }}">Login</a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
 </header>
 
 <!-- ================= MAIN CONTENT ================= -->
-<main>
+<main class="page-main">
+    <div class="page-container page-fade">
     {% block content %}
     {% endblock %}
+    </div>
 </main>
 
 <!-- ================= FOOTER ================= -->
-<footer>
-    <p>&copy; FRIENDS SISHU BIKASH ACADEMY. All Rights Reserved.</p>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <p>© Friends Sishu Bikash Academy. All Rights Reserved.</p>
+    </div>
 </footer>
 
 <!-- Chatbot UI -->
@@ -64,7 +87,14 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  // AOS (Animate On Scroll) init
+  if (window.AOS) {
+    AOS.init({ duration: 550, easing: "ease-out", once: true, offset: 80 });
+  }
+</script>
+
+
 
 </body>
 </html>

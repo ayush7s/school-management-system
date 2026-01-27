@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}UPI Payment{% endblock %}
+
+{% block content %}
+<div class="payment-page">
+    <div class="payment-card">
+        <header class="payment-header">
+            <h2>Complete Payment</h2>
+            <p class="payment-material">{{ material.title }}</p>
+            <p class="payment-amount-label">Amount to pay</p>
+            <p class="payment-amount">₹{{ amount }}</p>
+        </header>
+
+        <section class="payment-upi">
+            <h3>Pay using UPI</h3>
+            <p class="payment-help">
+                Scan the QR from your banking / UPI app or tap the button to open your UPI app directly.
+            </p>
+
+            <div class="payment-qr">
+                <h4>Scan QR (Desktop Users)</h4>
+                <div class="payment-qr-image">
+                    <img
+                        src="{{ url_for('download_qr', filename=qr_image) }}"
+                        alt="UPI QR Code">
+                </div>
+            </div>
+
+            <!-- UPI DEEP LINK BUTTON -->
+            <a href="{{ upi_link }}" class="btn btn-upi btn-full">
+                Pay ₹{{ amount }} via UPI
+            </a>
+
+            <p class="payment-note">
+                Clicking this button will open your UPI app with the amount already filled.
+                You can also pay using the above QR from Google Pay / PhonePe / Paytm.
+            </p>
+        </section>
+
+        <section class="payment-form-section">
+            <h3>Confirm your payment</h3>
+            <form method="POST" action="{{ url_for('submit_payment') }}" class="payment-form">
+                <input type="hidden" name="material_id" value="{{ material.id }}">
+                <input type="hidden" name="email" value="{{ email }}">
+                <input type="hidden" name="amount" value="{{ amount }}">
+
+                <label for="utr_input"><strong>Enter UTR / Transaction ID</strong></label>
+                <input
+                    id="utr_input"
+                    type="text"
+                    name="utr"
+                    placeholder="e.g. 123456789012"
+                    required>
+
+                <button class="btn btn-primary btn-full">
+                    Submit &amp; Get PDF
+                </button>
+            </form>
+
+            <p class="payment-footer-text">
+                After submitting, your PDF and receipt will be sent automatically to your Gmail.
+            </p>
+        </section>
+    </div>
+</div>
+{% endblock %}

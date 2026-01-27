@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Faculty Members{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <header class="admin-page-header">
+        <h2>Manage Faculty Members</h2>
+        <p>Add faculty profiles and manage the current list.</p>
+    </header>
+
+    <div class="admin-toolbar" data-aos="fade-up">
+        <button type="button" class="btn btn-primary" onclick="openModal('facultyModal')">
+            Add Faculty
+        </button>
+    </div>
+
+    <!-- Faculty Grid -->
+    <div class="faculty-grid admin-faculty-grid" data-aos="fade-up">
+        {% for f in faculty_members %}
+        <article class="faculty-card" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 50 }}">
+            <div class="faculty-avatar">
+                <img src="{{ url_for('static', filename='../uploads/faculty/' + f.image) }}" alt="{{ f.name }}">
+            </div>
+            <div class="faculty-body">
+                <h3>{{ f.name }}</h3>
+                <p class="faculty-role">{{ f.designation }}</p>
+            </div>
+            <div class="card-actions">
+                <a href="{{ url_for('delete_faculty', id=f.id) }}"
+                   onclick="return confirm('Delete this faculty?')"
+                   class="btn btn-danger btn-xs">
+                    Delete
+                </a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Modal: Add Faculty -->
+    <div class="modal-backdrop" id="facultyModal" role="dialog" aria-modal="true" aria-label="Add Faculty" style="display:none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Faculty</h3>
+                <button type="button" class="modal-close" aria-label="Close" onclick="closeModal('facultyModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data" class="form-card">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Faculty Name</label>
+                            <input type="text" name="name" placeholder="Faculty Name" required>
+                        </div>
+                        <div class="form-field">
+                            <label>Designation</label>
+                            <input type="text" name="designation" placeholder="Designation" required>
+                        </div>
+                        <div class="form-field">
+                            <label>Photo</label>
+                            <input type="file" name="photo" required>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full">Add Faculty</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

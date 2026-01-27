@@ -3,14 +3,20 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+<center>
 <h2>Login</h2>
+</center>
 
 <form method="POST" class="login-form">
     <label>Email</label><br>
     <input type="email" name="email" required><br><br>
 
     <label>Password</label><br>
-    <input type="password" name="password" required><br><br>
+    <div class="password-field">
+        <input id="loginPassword" type="password" name="password" required>
+        
+    </div>
+    <br><br>
 
     <button type="submit">Login</button>
 </form>

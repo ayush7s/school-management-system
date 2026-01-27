@@ -3,27 +3,38 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<h2>Admin Dashboard</h2>
+<div class="admin-page">
+    <header class="admin-page-header">
+        <h2>Admin Dashboard</h2>
+        <p>Quick overview of activity across notices, announcements, and materials.</p>
+    </header>
 
-<div class="admin-dashboard">
+    <section class="admin-stats-grid" data-aos="fade-up">
+        <article class="admin-card" data-aos="zoom-in">
+            <h3>Notices</h3>
+            <p class="admin-stat">{{ notice_count }}</p>
+            <a href="{{ url_for('notices') }}" class="btn btn-outline btn-xs">Manage Notices</a>
+        </article>
 
-    <div class="admin-card">
-        <h3>Notices</h3>
-        <p>Total: {{ notice_count }}</p>
-        <a href="{{ url_for('notices') }}">Manage Notices</a>
-    </div>
+        <article class="admin-card" data-aos="zoom-in" data-aos-delay="60">
+            <h3>Announcements</h3>
+            <p class="admin-stat">{{ announcement_count }}</p>
+            <a href="{{ url_for('announcements') }}" class="btn btn-outline btn-xs">Manage Announcements</a>
+        </article>
 
-    <div class="admin-card">
-        <h3>Announcements</h3>
-        <p>Total: {{ announcement_count }}</p>
-        <a href="{{ url_for('announcements') }}">Manage Announcements</a>
-    </div>
+        <article class="admin-card" data-aos="zoom-in" data-aos-delay="120">
+            <h3>Study Materials</h3>
+            <p class="admin-stat">{{ material_count }}</p>
+            <a href="{{ url_for('materials') }}" class="btn btn-outline btn-xs">Manage Materials</a>
+        </article>
 
-    <div class="admin-card">
-        <h3>Study Materials</h3>
-        <p>Total: {{ material_count }}</p>
-        <a href="{{ url_for('materials') }}">Manage Materials</a>
-    </div>
-
+        <article class="admin-card admin-card-accent" data-aos="zoom-in" data-aos-delay="180">
+            <h3>Paid Materials</h3>
+            <p class="admin-stat">{{ paid_material_count }}</p>
+            <a href="{{ url_for('admin_payments') }}" class="btn btn-secondary btn-xs">
+                View Payments
+            </a>
+        </article>
+    </section>
 </div>
 {% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}
+Paid Study Materials
+{% endblock %}
+
+{% block content %}
+
+<div class="paid-materials-page">
+    <div class="section-header">
+        <h2>Paid Study Materials</h2>
+        <p>
+            Select class and subject to filter paid study materials.
+            After payment, the PDF and receipt will be sent to your Gmail.
+        </p>
+    </div>
+
+    <!-- ================= FILTER SECTION ================= -->
+    <form method="GET" class="filter-row">
+        <div class="filter-group">
+            <label for="filter_class">Class</label>
+            <select id="filter_class" name="class">
+                <option value="">All Classes</option>
+                {% for c in classes %}
+                    <option value="{{ c }}" {% if c == selected_class %}selected{% endif %}>
+                        {{ c }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="filter_subject">Subject</label>
+            <select id="filter_subject" name="subject">
+                <option value="">All Subjects</option>
+                {% for s in subjects %}
+                    <option value="{{ s }}" {% if s == selected_subject %}selected{% endif %}>
+                        {{ s }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-secondary filter-btn">
+            Filter
+        </button>
+    </form>
+
+    <!-- ================= MATERIALS CARDS ================= -->
+    {% if paid_materials %}
+        <div class="materials-grid">
+            {% for material in paid_materials %}
+            <article class="material-card">
+                <div class="material-header">
+                    <h3>{{ material.title }}</h3>
+                    <span class="material-price">₹{{ material.price }}</span>
+                </div>
+                <p class="material-meta">
+                    Class {{ material.class_name }} · {{ material.subject }}
+                </p>
+
+                <div class="material-email">
+                    <label for="email_{{ material.id }}">Gmail address</label>
+                    <div class="material-email-row">
+                        <input type="email"
+                               id="email_{{ material.id }}"
+                               placeholder="example@gmail.com"
+                               oninput="validateGmail({{ material.id }})"
+                               required>
+                        <span id="email_status_{{ material.id }}" class="email-status"></span>
+                    </div>
+                </div>
+
+                <form method="POST"
+                      action="{{ url_for('start_payment') }}"
+                      onsubmit="copyEmail({{ material.id }})"
+                      class="material-cta">
+
+                    <input type="hidden" name="material_id" value="{{ material.id }}">
+                    <input type="hidden" name="email" id="hidden_email_{{ material.id }}">
+
+                    <button id="pay_btn_{{ material.id }}"
+                            type="submit"
+                            class="btn btn-primary btn-full"
+                            disabled>
+                        Get PDF
+                    </button>
+                </form>
+            </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No paid materials found.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

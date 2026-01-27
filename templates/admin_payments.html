@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Payment History{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <header class="admin-page-header">
+        <h2>Payment History</h2>
+        <p>View recent paid material purchases.</p>
+    </header>
+
+    <div class="table-card">
+        <div class="table-scroll">
+            <table class="table">
+                <tr>
+                    <th>Email</th>
+                    <th>Material</th>
+                    <th>Class</th>
+                    <th>Subject</th>
+                    <th>Amount</th>
+                    <th>UTR</th>
+                    <th>Date</th>
+                </tr>
+
+                {% for payment, material in payments %}
+                <tr>
+                    <td>{{ payment.email }}</td>
+                    <td>{{ material.title }}</td>
+                    <td>{{ material.class_name }}</td>
+                    <td>{{ material.subject }}</td>
+                    <td><span class="pill-amount">₹{{ payment.amount }}</span></td>
+                    <td><span class="mono">{{ payment.utr }}</span></td>
+                    <td>{{ payment.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
