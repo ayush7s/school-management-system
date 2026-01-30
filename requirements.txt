@@ -5,3 +5,4 @@ gunicorn
 qrcode[pil]
 Pillow
 reportlab
+dotenv

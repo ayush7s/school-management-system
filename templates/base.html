@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}FRIENDS SISHU BIKASH ACADEMY{% endblock %}</title>
+    <title>{% block title %}FRIENDS SHISHU BIKASH ACADEMY{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
@@ -20,7 +20,7 @@
              alt="School Logo" 
              class="logo-mark">
             <div class="logo-text">
-                <h1>FRIENDS SISHU BIKASH ACADEMY</h1>
+                <h1>FRIENDS SHISHU BIKASH ACADEMY</h1>
                
             </div>
         </div>
@@ -33,14 +33,14 @@
             <ul class="nav-links" id="primaryNav">
                 <li><a class="nav-link" href="/">Home</a></li>
                 {% if session.get("role") == "admin" %}
-                    <li><a class="nav-link" href="{{ url_for('admin_faculty') }}">Manage Faculty</a></li>
+                    <li><a class="nav-link" href="{{ url_for('admin_faculty') }}">Manage Teachers</a></li>
                 {% endif %}
                 {% if session.get("role") == "admin" %}
                     <li><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
                     <li><a class="nav-link" href="{{ url_for('admin_paid_materials') }}">Manage Paid Materials</a></li>
                 {% endif %}
 
-                <li><a class="nav-link" href="{{ url_for('faculty_public') }}">Faculty Members</a></li>
+                <li><a class="nav-link" href="{{ url_for('faculty_public') }}">Teachers</a></li>
                 <li><a class="nav-link" href="/notices">Notices</a></li>
                 <li><a class="nav-link" href="/announcements">Announcements</a></li>
                 <li><a class="nav-link" href="/materials">Study Materials</a></li>
@@ -71,7 +71,7 @@
 <!-- ================= FOOTER ================= -->
 <footer class="site-footer">
     <div class="footer-inner">
-        <p>© Friends Sishu Bikash Academy. All Rights Reserved.</p>
+        <p>© Friends Shishu Bikash Academy. All Rights Reserved.</p>
     </div>
 </footer>
 

@@ -51,12 +51,12 @@ def generate_receipt(receipt_path, school_name, email, material, amount, utr):
     c.roundRect(margin_x, top_y - header_h, content_w, header_h, 12, stroke=1, fill=1)
 
     # Logo (keep path as-is; fallback if missing)
-    logo_path = "static/images/logo.jpeg"
+    logo_path = "static/images/logo.png"
     if os.path.exists(logo_path):
         c.drawImage(logo_path, margin_x + 0.6 * cm, top_y - header_h + 0.45 * cm, width=2.2 * cm, height=2.2 * cm, mask="auto")
 
     c.setFillColor(GREEN)
-    c.setFont("Helvetica-Bold", 16)
+    c.setFont("Helvetica", 16)
     c.drawString(margin_x + 3.2 * cm, top_y - 1.2 * cm, school_name)
 
     c.setFillColor(DARK)
@@ -69,8 +69,8 @@ def generate_receipt(receipt_path, school_name, email, material, amount, utr):
 
     c.setFillColor(MUTED)
     c.setFont("Helvetica", 9)
-    c.drawRightString(margin_x + content_w - 0.6 * cm, top_y - 1.1 * cm, f"Invoice No: {invoice_no}")
-    c.drawRightString(margin_x + content_w - 0.6 * cm, top_y - 1.7 * cm, f"Date: {invoice_date}")
+    c.drawRightString(margin_x + content_w - 0.6 * cm, top_y - 1.7 * cm, f"Invoice No: {invoice_no}")
+    c.drawRightString(margin_x + content_w - 0.6 * cm, top_y - 2.0 * cm, f"Date: {invoice_date}")
 
     # Bill-to block
     y = top_y - header_h - 1.0 * cm
@@ -109,8 +109,8 @@ def generate_receipt(receipt_path, school_name, email, material, amount, utr):
     c.setFillColor(DARK)
     c.setFont("Helvetica", 10)
     c.drawString(col_item + 0.35 * cm, table_top - 0.62 * cm, material.title)
-    c.drawString(col_price, table_top - 0.62 * cm, f"₹{amount}")
-    c.drawRightString(col_total, table_top - 0.62 * cm, f"₹{amount}")
+    c.drawString(col_price, table_top - 0.62 * cm, f"Rs. {amount}")
+    c.drawRightString(col_total, table_top - 0.62 * cm, f"Rs. {amount}")
 
     # Totals block
     totals_y = table_top - row_h - 1.0 * cm
@@ -118,13 +118,13 @@ def generate_receipt(receipt_path, school_name, email, material, amount, utr):
     c.setFillColor(MUTED)
     c.drawRightString(col_total, totals_y, "Subtotal")
     c.setFillColor(DARK)
-    c.drawRightString(col_total, totals_y - 0.55 * cm, f"₹{amount}")
+    c.drawRightString(col_total, totals_y - 0.55 * cm, f"Rs. {amount}")
 
     c.setFillColor(MUTED)
     c.drawRightString(col_total, totals_y - 1.2 * cm, "Total Amount")
     c.setFillColor(GREEN)
     c.setFont("Helvetica-Bold", 14)
-    c.drawRightString(col_total, totals_y - 1.85 * cm, f"₹{amount}")
+    c.drawRightString(col_total, totals_y - 1.85 * cm, f"Rs. {amount}")
 
     # Payment info card
     info_y = totals_y - 2.8 * cm

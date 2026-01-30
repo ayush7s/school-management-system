@@ -1,8 +1,13 @@
+
 import os
+
+
 from functools import wraps
 from datetime import datetime, timedelta
 from utils.qr_generator import generate_upi_qr
 from models import Faculty
+
+
 
 
 
@@ -137,14 +142,7 @@ def home():
         ).limit(1).all()
         
     )
-#---------------faculty public--------
-@app.route("/faculty")
-def faculty_public():
-    faculty_members = Faculty.query.filter_by(is_active=True).all()
-    return render_template(
-        "faculty.html",
-        faculty_members=faculty_members
-    )
+
 
 # ---------------- CONTACT ----------------
 @app.route("/contact")
@@ -402,6 +400,24 @@ def delete_paid_material(id):
     flash("Paid material deleted successfully")
     return redirect(url_for("admin_paid_materials"))
 #----------------faculty list----------------
+@app.route("/faculty")
+def faculty_public():
+    principal = Faculty.query.filter_by(
+        is_principal=True,
+        is_active=True
+    ).first()
+
+    faculty_members = Faculty.query.filter_by(
+        is_principal=False,
+        is_active=True
+    ).all()
+
+    return render_template(
+        "faculty.html",
+        principal=principal,
+        faculty_members=faculty_members
+    )
+
 @app.route("/admin/faculty", methods=["GET", "POST"])
 @admin_required
 def admin_faculty():
@@ -429,6 +445,22 @@ def admin_faculty():
         "admin_faculty.html",
         faculty_members=faculty_members
     )
+@app.route("/admin/faculty/make-principal/<int:id>")
+@admin_required
+def make_principal(id):
+    # Remove existing principal
+    Faculty.query.filter_by(is_principal=True).update(
+        {"is_principal": False}
+    )
+
+    # Set new principal
+    faculty = Faculty.query.get_or_404(id)
+    faculty.is_principal = True
+
+    db.session.commit()
+    flash(f"{faculty.name} is now the Principal")
+
+    return redirect(url_for("admin_faculty"))
 
 #-------delete faculty------------------
 @app.route("/admin/faculty/delete/<int:id>")

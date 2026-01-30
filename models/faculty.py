@@ -15,6 +15,8 @@ class Faculty(db.Model):
     description = db.Column(db.Text, nullable=True)
 
     is_active = db.Column(db.Boolean, default=True)
+    
+    is_principal = db.Column(db.Boolean, default=False)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
