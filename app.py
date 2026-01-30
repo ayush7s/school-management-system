@@ -1,14 +1,8 @@
 
 import os
-
-
-from functools import wraps
-from datetime import datetime, timedelta
-from utils.qr_generator import generate_upi_qr
-from models import Faculty
-
-
-
+from dotenv import load_dotenv
+load_dotenv()   # must be FIRST
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 from flask import (
@@ -16,57 +10,62 @@ from flask import (
     redirect, url_for, send_from_directory,
     session, flash
 )
+
+from config import Config
+from models import db
+
+# ---------------- APP INIT ----------------
+app = Flask(__name__)
+app.config.from_object(Config)
+
+db.init_app(app)
+from functools import wraps
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from models import db
+from utils.qr_generator import generate_upi_qr
+from utils.receipt import generate_receipt
+from utils.email_service import send_email
+
 from models.user import User
 from models.notice import Notice
 from models.study_material import StudyMaterial
 from models.announcement import Announcement
 from models.paid_material import PaidMaterial
 from models.payment import Payment
-
-from utils.receipt import generate_receipt
-from utils.email_service import send_email
+from models.faculty import Faculty
 
 # ---------------- APP INIT ----------------
-app = Flask(__name__)
+def create_admin():
+    # Only run on Render
+    if not os.environ.get("RENDER"):
+        return
 
-# ---------------- BASE DIRECTORY ----------------
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    with app.app_context():
+        admin_email = os.environ.get("ADMIN_EMAIL")
+        admin_password = os.environ.get("ADMIN_PASSWORD")
 
-# ---------------- DATABASE CONFIG ----------------
-INSTANCE_DIR = os.path.join(BASE_DIR, "instance")
-os.makedirs(INSTANCE_DIR, exist_ok=True)
+        if not admin_email or not admin_password:
+            return
 
-DB_PATH = os.path.join(INSTANCE_DIR, "school.db")
-
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + DB_PATH
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "school_secret_key")
-
-db.init_app(app)
-
-# ---------------- CREATE TABLES + ADMIN ----------------
-with app.app_context():
-    db.create_all()
-
-    admin_email = os.environ.get("ADMIN_EMAIL")
-    admin_password = os.environ.get("ADMIN_PASSWORD")
-
-    if admin_email and admin_password:
         admin = User.query.filter_by(email=admin_email).first()
         if not admin:
             admin = User(
                 name="Administrator",
                 email=admin_email,
-                role="admin"
+                role="admin",
+                password=generate_password_hash(admin_password)
             )
             db.session.add(admin)
+            db.session.commit()
+            print("✅ Admin created")
 
-        admin.password = generate_password_hash(admin_password)
-        db.session.commit()
+
+# ---------------- BASE DIRECTORY ----------------
+
+
+# ---------------- CREATE TABLES + ADMIN ----------------
 
 # ---------------- FILE UPLOAD CONFIG ----------------
 NOTICE_FOLDER = os.path.join(BASE_DIR, "uploads", "notices")
