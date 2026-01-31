@@ -19,9 +19,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
-@app.route("/")
-def health():
-    return "OK", 200
+
 
 from functools import wraps
 from datetime import datetime, timedelta
