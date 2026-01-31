@@ -20,6 +20,8 @@ app.config.from_object(Config)
 
 db.init_app(app)
 
+with app.app_context():
+    db.create_all()
 
 from functools import wraps
 from datetime import datetime, timedelta
