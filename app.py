@@ -60,6 +60,7 @@ def create_admin():
             db.session.add(admin)
             db.session.commit()
             print("✅ Admin created")
+create_admin()
 
 
 # ---------------- BASE DIRECTORY ----------------
