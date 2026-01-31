@@ -37,17 +37,22 @@ from models.payment import Payment
 from models.faculty import Faculty
 
 # ---------------- APP INIT ----------------
-def create_admin():
-    # Only run on Render
+# ---------------- ADMIN BOOTSTRAP (ONE-TIME) ----------------
+
+def create_admin_and_tables():
+    # Allow only on Render
     if not os.environ.get("RENDER"):
-        return
+        return "Not allowed", 403
 
     with app.app_context():
+        # Create tables once
+        db.create_all()
+
         admin_email = os.environ.get("ADMIN_EMAIL")
         admin_password = os.environ.get("ADMIN_PASSWORD")
 
         if not admin_email or not admin_password:
-            return
+            return "Admin env vars missing", 500
 
         admin = User.query.filter_by(email=admin_email).first()
         if not admin:
@@ -59,8 +64,17 @@ def create_admin():
             )
             db.session.add(admin)
             db.session.commit()
-            print("✅ Admin created")
-create_admin()
+            return "✅ Admin created"
+
+        return "ℹ️ Admin already exists"
+
+
+@app.route("/__create_admin_once")
+def create_admin_once():
+    return create_admin_and_tables()
+
+
+
 
 
 # ---------------- BASE DIRECTORY ----------------
