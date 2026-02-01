@@ -20,8 +20,11 @@ app.config.from_object(Config)
 
 db.init_app(app)
 
+<<<<<<< HEAD
 with app.app_context():
     db.create_all()
+=======
+>>>>>>> 4a6dede (Fix all code changes)
 
 from functools import wraps
 from datetime import datetime, timedelta
@@ -41,24 +44,26 @@ from models.payment import Payment
 from models.faculty import Faculty
 
 # ---------------- APP INIT ----------------
-# ---------------- ADMIN BOOTSTRAP (ONE-TIME) ----------------
+# ---------------- ADMIN BOOTSTRAP (LOCAL + RENDER SAFE) ----------------
 
-def create_admin_and_tables():
-    # Allow only on Render
-    if not os.environ.get("RENDER"):
-        return "Not allowed", 403
+def bootstrap_admin():
+    """
+    Creates tables and admin user safely.
+    Works on LOCAL and RENDER.
+    """
+
+    admin_email = os.environ.get("ADMIN_EMAIL")
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+
+    if not admin_email or not admin_password:
+        print("⚠️ Admin env vars not found. Skipping admin bootstrap.")
+        return
 
     with app.app_context():
-        # Create tables once
         db.create_all()
 
-        admin_email = os.environ.get("ADMIN_EMAIL")
-        admin_password = os.environ.get("ADMIN_PASSWORD")
-
-        if not admin_email or not admin_password:
-            return "Admin env vars missing", 500
-
         admin = User.query.filter_by(email=admin_email).first()
+
         if not admin:
             admin = User(
                 name="Administrator",
@@ -68,14 +73,17 @@ def create_admin_and_tables():
             )
             db.session.add(admin)
             db.session.commit()
-            return "✅ Admin created"
+            print("✅ Admin created")
+        else:
+            # keep password synced with env
+            admin.password = generate_password_hash(admin_password)
+            db.session.commit()
+            print("ℹ️ Admin already exists (password synced)")
 
-        return "ℹ️ Admin already exists"
 
+# ✅ run once at startup
+bootstrap_admin()
 
-@app.route("/__create_admin_once")
-def create_admin_once():
-    return create_admin_and_tables()
 
 
 
